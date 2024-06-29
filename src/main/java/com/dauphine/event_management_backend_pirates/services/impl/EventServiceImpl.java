@@ -20,7 +20,9 @@ import java.util.UUID;
 @Service
 public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
+
     private final CategoryRepository categoryRepository;
+
     private final LocationRepository locationRepository;
 
     private final AppUserRepository appUserRepository;
@@ -36,6 +38,11 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<Event> getAll() {
         return eventRepository.findAll();
+    }
+
+    @Override
+    public List<Event> getAllEventsToExplore(UUID userId) {
+        return eventRepository.findAllToExplore(userId);
     }
 
     @Override

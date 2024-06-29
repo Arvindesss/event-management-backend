@@ -22,4 +22,6 @@ public interface EventService {
     Event update(UUID id, String name);
 
     boolean deleteById(UUID id);
+
+    List<Event> getAllEventsToExplore(UUID userId);
 }
