@@ -1,8 +1,11 @@
 package com.dauphine.event_management_backend_pirates.services.impl;
 
+import com.dauphine.event_management_backend_pirates.controllers.requestbody.CreateEventRequestBody;
+import com.dauphine.event_management_backend_pirates.models.AppUser;
 import com.dauphine.event_management_backend_pirates.models.Category;
 import com.dauphine.event_management_backend_pirates.models.Event;
 import com.dauphine.event_management_backend_pirates.models.Location;
+import com.dauphine.event_management_backend_pirates.repository.AppUserRepository;
 import com.dauphine.event_management_backend_pirates.repository.CategoryRepository;
 import com.dauphine.event_management_backend_pirates.repository.EventRepository;
 import com.dauphine.event_management_backend_pirates.repository.LocationRepository;
@@ -20,10 +23,14 @@ public class EventServiceImpl implements EventService {
     private final CategoryRepository categoryRepository;
     private final LocationRepository locationRepository;
 
-    public EventServiceImpl(EventRepository eventRepository, CategoryRepository categoryRepository, LocationRepository locationRepository) {
+    private final AppUserRepository appUserRepository;
+
+    public EventServiceImpl(EventRepository eventRepository, CategoryRepository categoryRepository,
+                            LocationRepository locationRepository, AppUserRepository appUserRepository) {
         this.eventRepository = eventRepository;
         this.categoryRepository = categoryRepository;
         this.locationRepository = locationRepository;
+        this.appUserRepository = appUserRepository;
     }
 
     @Override
@@ -42,15 +49,21 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Event create(String name, String description, LocalDateTime startDate, LocalDateTime endDate,
-                        UUID locationId, UUID categoryId) {
-        Optional<Location> location = locationRepository.findById(locationId);
-        Optional<Category> category = categoryRepository.findById(categoryId);
-        if(location.isPresent() && category.isPresent()) {
-            Event event = new Event(name,description,startDate,endDate,location.get(),category.get());
+    public Event create(CreateEventRequestBody createEventRequestBody) {
+        Optional<Location> location = locationRepository.findById(createEventRequestBody.locationId());
+        Optional<Category> category = categoryRepository.findById(createEventRequestBody.categoryId());
+        Optional<AppUser> user = appUserRepository.findById(createEventRequestBody.organizerId());
+        if(location.isPresent() && category.isPresent() && user.isPresent()) {
+            Event event = new Event(createEventRequestBody.name(),
+                    createEventRequestBody.description(),
+                    createEventRequestBody.startDate(),
+                    createEventRequestBody.endDate(),
+                    location.get(),
+                    category.get(),
+                    user.get());
             return eventRepository.save(event);
         }
-        else throw new RuntimeException("Category or location not found");
+        else throw new RuntimeException("Category or location or user not found");
     }
 
     @Override

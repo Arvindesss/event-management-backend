@@ -1,5 +1,6 @@
 package com.dauphine.event_management_backend_pirates.services;
 
+import com.dauphine.event_management_backend_pirates.controllers.requestbody.CreateEventRequestBody;
 import com.dauphine.event_management_backend_pirates.models.Event;
 import io.swagger.v3.oas.annotations.servers.Server;
 import org.springframework.stereotype.Service;
@@ -16,8 +17,7 @@ public interface EventService {
 
     Event getById(UUID id);
 
-    Event create(String name, String description, LocalDateTime startDate, LocalDateTime endDate,
-                 UUID locationId, UUID categoryId);
+    Event create(CreateEventRequestBody createEventRequestBody);
 
     Event update(UUID id, String name);
 

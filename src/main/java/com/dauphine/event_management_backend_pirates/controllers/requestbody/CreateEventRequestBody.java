@@ -4,5 +4,5 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record CreateEventRequestBody(String name, String description, LocalDateTime startDate, LocalDateTime endDate,
-                                     UUID locationId, UUID categoryId) {
+                                     UUID locationId, UUID categoryId, UUID organizerId) {
 }

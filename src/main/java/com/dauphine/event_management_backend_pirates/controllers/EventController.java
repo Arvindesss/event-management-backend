@@ -30,9 +30,7 @@ public class  EventController {
 
     @PostMapping("")
     public Event createEvent(@RequestBody CreateEventRequestBody createEventRequestBody){
-        return eventService.create(createEventRequestBody.name(), createEventRequestBody.description(),
-                createEventRequestBody.startDate(),createEventRequestBody.endDate(),createEventRequestBody.locationId(),
-                createEventRequestBody.categoryId());
+        return eventService.create(createEventRequestBody);
     }
 
     @PutMapping("/{id}")

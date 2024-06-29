@@ -1,5 +1,6 @@
 package com.dauphine.event_management_backend_pirates.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -19,9 +20,11 @@ public class Event {
     @Column(name = "description")
     private String description;
 
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     @Column(name = "start_date")
     private LocalDateTime startDate;
 
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     @Column(name = "end_date")
     private LocalDateTime endDate;
 
@@ -33,7 +36,11 @@ public class Event {
     @JoinColumn(name = "id_category")
     private Category category;
 
-    public Event(String name, String description, LocalDateTime startDate, LocalDateTime endDate, Location location, Category category) {
+    @ManyToOne
+    @JoinColumn(name = "organizer")
+    private AppUser organizer;
+
+    public Event(String name, String description, LocalDateTime startDate, LocalDateTime endDate, Location location, Category category, AppUser organizer) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.description = description;
@@ -41,6 +48,7 @@ public class Event {
         this.endDate = endDate;
         this.location = location;
         this.category = category;
+        this.organizer = organizer;
     }
 
     public Event() {
@@ -100,5 +108,13 @@ public class Event {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public AppUser getOrganizer() {
+        return organizer;
+    }
+
+    public void setOrganizer(AppUser organizer) {
+        this.organizer = organizer;
     }
 }

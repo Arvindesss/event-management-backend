@@ -3,7 +3,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE APP_USER(
     id_user UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
-    password VARCHAR(50) NOT NULL,
+    password VARCHAR(100) NOT NULL,
     UNIQUE(username)
 );
 
@@ -28,8 +28,10 @@ CREATE TABLE EVENT(
     end_date TIMESTAMPTZ,
     id_category UUID NOT NULL,
     id_location UUID NOT NULL,
+    organizer UUID NOT NULL,
     FOREIGN KEY(id_category) REFERENCES CATEGORY(id_category),
-    FOREIGN KEY(id_location) REFERENCES LOCATION(id_location)
+    FOREIGN KEY(id_location) REFERENCES LOCATION(id_location),
+    FOREIGN KEY(organizer) REFERENCES APP_USER(id_user)
 );
 
 CREATE TABLE EVENT_PARTICIPATION(
