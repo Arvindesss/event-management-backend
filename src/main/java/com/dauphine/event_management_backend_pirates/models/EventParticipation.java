@@ -16,6 +16,10 @@ public class EventParticipation {
     @Column(name = "rating")
     private Double rating;
 
+    public EventParticipation(EventParticipationId id) {
+        this.id = id;
+    }
+
     public EventParticipation(EventParticipationId id, String feedback, Double rating) {
         this.id = id;
         this.feedback = feedback;
