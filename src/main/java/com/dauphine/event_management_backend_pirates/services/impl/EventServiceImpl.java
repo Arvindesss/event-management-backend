@@ -2,10 +2,7 @@ package com.dauphine.event_management_backend_pirates.services.impl;
 
 import com.dauphine.event_management_backend_pirates.controllers.requestbody.CreateEventRequestBody;
 import com.dauphine.event_management_backend_pirates.controllers.requestbody.UpdateEventRequestBody;
-import com.dauphine.event_management_backend_pirates.models.AppUser;
-import com.dauphine.event_management_backend_pirates.models.Category;
-import com.dauphine.event_management_backend_pirates.models.Event;
-import com.dauphine.event_management_backend_pirates.models.Location;
+import com.dauphine.event_management_backend_pirates.models.*;
 import com.dauphine.event_management_backend_pirates.repository.EventRepository;
 import com.dauphine.event_management_backend_pirates.services.AppUserService;
 import com.dauphine.event_management_backend_pirates.services.CategoryService;
@@ -58,6 +55,23 @@ public class EventServiceImpl implements EventService {
     public Event getById(UUID id) throws EventNotFoundByIdException {
         return eventRepository.findById(id).orElseThrow(() -> new EventNotFoundByIdException("Event with id "
                 + id + " not found"));
+    }
+
+    public List<Event> getByOrganizerId(UUID organizerId) throws AppUserNotFoundByIdException {
+        appUserService.getById(organizerId);
+        return eventRepository.findAllByOrganizerId(organizerId);
+    }
+
+    @Override
+    public List<Event> getRegisteredEventsByUser(UUID userId) throws AppUserNotFoundByIdException {
+        appUserService.getById(userId);
+        return eventRepository.findAllUserRegisteredEvents(userId);
+    }
+
+    @Override
+    public List<Event> getFinishedEventsByUser(UUID userId) throws AppUserNotFoundByIdException {
+        appUserService.getById(userId);
+        return eventRepository.findAllFinishedEvents(userId);
     }
     @Override
     public Event create(CreateEventRequestBody createEventRequestBody)

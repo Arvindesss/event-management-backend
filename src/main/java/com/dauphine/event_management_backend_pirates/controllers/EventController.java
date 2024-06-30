@@ -3,6 +3,7 @@ package com.dauphine.event_management_backend_pirates.controllers;
 import com.dauphine.event_management_backend_pirates.controllers.requestbody.CreateEventRequestBody;
 import com.dauphine.event_management_backend_pirates.controllers.requestbody.UpdateEventRequestBody;
 import com.dauphine.event_management_backend_pirates.models.Event;
+import com.dauphine.event_management_backend_pirates.models.EventParticipation;
 import com.dauphine.event_management_backend_pirates.models.Location;
 import com.dauphine.event_management_backend_pirates.services.EventService;
 import com.dauphine.event_management_backend_pirates.services.exceptions.AppUserNotFoundByIdException;
@@ -42,6 +43,26 @@ public class  EventController {
         Event event = eventService.getById(id);
         return ResponseEntity.ok(event);
     }
+    @GetMapping("/my-events/{organizerId}")
+    public ResponseEntity<List<Event>> getByOrganizerId(@PathVariable UUID organizerId)
+            throws AppUserNotFoundByIdException {
+        List<Event> events = eventService.getByOrganizerId(organizerId);
+        return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("/registered-events/{userId}")
+    public ResponseEntity<List<Event>> getRegisteredEventsByUser(@PathVariable UUID userId)
+            throws AppUserNotFoundByIdException {
+        List<Event> events = eventService.getRegisteredEventsByUser(userId);
+        return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("/finished-events/{userId}")
+    public ResponseEntity<List<Event>> getFinishedEventsByUser(@PathVariable UUID userId)
+            throws AppUserNotFoundByIdException {
+        List<Event> events = eventService.getFinishedEventsByUser(userId);
+        return ResponseEntity.ok(events);
+    }
 
     @PostMapping("")
     public ResponseEntity<Event>  createEvent(@RequestBody CreateEventRequestBody createEventRequestBody)
@@ -53,7 +74,7 @@ public class  EventController {
     }
 
     @PutMapping("")
-    public ResponseEntity<Event>  updateEvent(@RequestBody UpdateEventRequestBody updateEventRequestBody)
+    public ResponseEntity<Event> updateEvent(@RequestBody UpdateEventRequestBody updateEventRequestBody)
             throws CategoryNotFoundByIdException, LocationNotFoundByIdException, EventNotFoundByIdException,
             AppUserNotFoundByIdException {
         Event event = eventService.update(updateEventRequestBody);

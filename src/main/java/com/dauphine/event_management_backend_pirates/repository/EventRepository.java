@@ -19,4 +19,26 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
             AND e.startDate >= CURRENT_TIMESTAMP
             """)
     List<Event> findAllToExplore(UUID userId);
+
+    @Query("""
+            SELECT e FROM Event e
+            INNER JOIN EventParticipation ep ON ep.id.event.id = e.id
+            WHERE ep.id.user.id = :userId
+            """)
+    List<Event> findAllUserRegisteredEvents(UUID userId);
+
+    @Query("""
+            SELECT e FROM Event e
+            WHERE e.organizer.id = :organizerId
+            """)
+    List<Event> findAllByOrganizerId(UUID organizerId);
+
+    @Query("""
+            SELECT e FROM Event e
+            INNER JOIN EventParticipation ep ON ep.id.event.id = e.id
+            WHERE ep.id.user.id = :userId
+            AND e.organizer.id != :userId
+            AND e.endDate < CURRENT_TIMESTAMP
+            """)
+    List<Event> findAllFinishedEvents(UUID userId);
 }

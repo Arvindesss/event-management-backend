@@ -15,15 +15,21 @@ import java.util.UUID;
 public interface EventService {
     List<Event> getAll();
 
+    List<Event> getAllEventsToExplore(UUID userId);
+
     List<Event> getAllByName(String name);
 
     Event getById(UUID id) throws EventNotFoundByIdException;
+
+    List<Event> getByOrganizerId(UUID userId) throws AppUserNotFoundByIdException;
+
+    List<Event> getRegisteredEventsByUser(UUID userId) throws AppUserNotFoundByIdException;
+
+    List<Event> getFinishedEventsByUser(UUID userId) throws AppUserNotFoundByIdException;
 
     Event create(CreateEventRequestBody createEventRequestBody) throws CategoryNotFoundByIdException, LocationNotFoundByIdException, AppUserNotFoundByIdException;
 
     Event update(UpdateEventRequestBody updateEventRequestBody) throws EventNotFoundByIdException, LocationNotFoundByIdException, CategoryNotFoundByIdException, AppUserNotFoundByIdException;
 
     void deleteById(UUID id) throws EventNotFoundByIdException;
-
-    List<Event> getAllEventsToExplore(UUID userId);
 }
