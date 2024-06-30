@@ -1,7 +1,6 @@
 package com.dauphine.event_management_backend_pirates.services.impl;
 
-import com.dauphine.event_management_backend_pirates.controllers.requestbody.CreateLocationRequestBody;
-import com.dauphine.event_management_backend_pirates.controllers.requestbody.UpdateLocationRequestBody;
+import com.dauphine.event_management_backend_pirates.controllers.requestbody.LocationRequestBody;
 import com.dauphine.event_management_backend_pirates.models.Location;
 import com.dauphine.event_management_backend_pirates.repository.LocationRepository;
 import com.dauphine.event_management_backend_pirates.services.LocationService;
@@ -9,7 +8,6 @@ import com.dauphine.event_management_backend_pirates.services.exceptions.Locatio
 import com.dauphine.event_management_backend_pirates.services.exceptions.LocationNotFoundByValueException;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -35,26 +33,18 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public Location create(CreateLocationRequestBody createLocationRequestBody) {
-        Optional<Location> checkExistingLocation = locationRepository.findByAddressAndPostalCodeAndCityAndCountry(
-                createLocationRequestBody.address(),
-                createLocationRequestBody.postalCode(),
-                createLocationRequestBody.city(),
-                createLocationRequestBody.country());
-        if(checkExistingLocation.isPresent()) {
-            return checkExistingLocation.get();
-        }
+    public Location create(LocationRequestBody locationRequestBody) {
         Location location = new Location(
-                createLocationRequestBody.address(),
-                createLocationRequestBody.postalCode(),
-                createLocationRequestBody.city(),
-                createLocationRequestBody.country());
+                locationRequestBody.address(),
+                locationRequestBody.postalCode(),
+                locationRequestBody.city(),
+                locationRequestBody.country());
         return locationRepository.save(location);
     }
 
     @Override
-    public Location update(UpdateLocationRequestBody updateLocationRequestBody) throws LocationNotFoundByIdException {
-        Location location = getById(updateLocationRequestBody.locationId());
+    public Location update(UUID id, LocationRequestBody updateLocationRequestBody) throws LocationNotFoundByIdException {
+        Location location = getById(id);
         location.setAddress(updateLocationRequestBody.address());
         location.setPostalCode(updateLocationRequestBody.postalCode());
         location.setCity(updateLocationRequestBody.city());

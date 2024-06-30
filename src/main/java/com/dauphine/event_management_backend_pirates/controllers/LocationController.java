@@ -1,7 +1,6 @@
 package com.dauphine.event_management_backend_pirates.controllers;
 
-import com.dauphine.event_management_backend_pirates.controllers.requestbody.CreateLocationRequestBody;
-import com.dauphine.event_management_backend_pirates.controllers.requestbody.UpdateLocationRequestBody;
+import com.dauphine.event_management_backend_pirates.controllers.requestbody.LocationRequestBody;
 import com.dauphine.event_management_backend_pirates.models.Location;
 import com.dauphine.event_management_backend_pirates.services.LocationService;
 import com.dauphine.event_management_backend_pirates.services.exceptions.LocationNotFoundByIdException;
@@ -23,10 +22,10 @@ public class LocationController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<Location> getLocationByValue(@RequestBody CreateLocationRequestBody createLocationRequestBody)
+    public ResponseEntity<Location> getLocationByValue(@RequestBody LocationRequestBody locationRequestBody)
             throws LocationNotFoundByIdException, LocationNotFoundByValueException {
-        Location location = locationService.getByValue(createLocationRequestBody.address(), createLocationRequestBody.postalCode(),
-                createLocationRequestBody.city(), createLocationRequestBody.country());
+        Location location = locationService.getByValue(locationRequestBody.address(), locationRequestBody.postalCode(),
+                locationRequestBody.city(), locationRequestBody.country());
         return ResponseEntity.ok(location);
     }
 
@@ -37,17 +36,17 @@ public class LocationController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Location> createLocation(@RequestBody CreateLocationRequestBody createLocationRequestBody){
-        Location location = locationService.create(createLocationRequestBody);
+    public ResponseEntity<Location> createLocation(@RequestBody LocationRequestBody locationRequestBody){
+        Location location = locationService.create(locationRequestBody);
         return ResponseEntity
                 .created(URI.create("v1/locations/" + location.getId()))
                 .body(location);
     }
 
-    @PutMapping("")
-    public ResponseEntity<Location> updateLocation(@RequestBody UpdateLocationRequestBody updateLocationRequestBody)
+    @PutMapping("/{id}")
+    public ResponseEntity<Location> updateLocation(@PathVariable UUID id, @RequestBody LocationRequestBody locationRequestBody)
             throws LocationNotFoundByIdException {
-        Location location = locationService.update(updateLocationRequestBody);
+        Location location = locationService.update(id, locationRequestBody);
         return ResponseEntity
                 .created(URI.create("v1/locations/" + location.getId()))
                 .body(location);

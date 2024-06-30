@@ -1,7 +1,6 @@
 package com.dauphine.event_management_backend_pirates.services;
 
-import com.dauphine.event_management_backend_pirates.controllers.requestbody.CreateLocationRequestBody;
-import com.dauphine.event_management_backend_pirates.controllers.requestbody.UpdateLocationRequestBody;
+import com.dauphine.event_management_backend_pirates.controllers.requestbody.LocationRequestBody;
 import com.dauphine.event_management_backend_pirates.models.Location;
 import com.dauphine.event_management_backend_pirates.services.exceptions.LocationNotFoundByIdException;
 import com.dauphine.event_management_backend_pirates.services.exceptions.LocationNotFoundByValueException;
@@ -14,9 +13,10 @@ public interface LocationService {
 
     Location getByValue(String address, String postalCode, String city, String country) throws LocationNotFoundByIdException, LocationNotFoundByValueException;
 
-    Location create(CreateLocationRequestBody createLocationRequestBody);
+    Location create(LocationRequestBody locationRequestBody);
 
-    Location update(UpdateLocationRequestBody updateLocationRequestBody) throws LocationNotFoundByIdException;
+    Location update(UUID id, LocationRequestBody updateLocationRequestBody) throws LocationNotFoundByIdException;
+
 
     void deleteById(UUID id) throws LocationNotFoundByIdException;
 }

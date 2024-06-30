@@ -1,10 +1,7 @@
 package com.dauphine.event_management_backend_pirates.controllers;
 
-import com.dauphine.event_management_backend_pirates.controllers.requestbody.CreateEventRequestBody;
-import com.dauphine.event_management_backend_pirates.controllers.requestbody.UpdateEventRequestBody;
+import com.dauphine.event_management_backend_pirates.controllers.requestbody.EventRequestBody;
 import com.dauphine.event_management_backend_pirates.models.Event;
-import com.dauphine.event_management_backend_pirates.models.EventParticipation;
-import com.dauphine.event_management_backend_pirates.models.Location;
 import com.dauphine.event_management_backend_pirates.services.EventService;
 import com.dauphine.event_management_backend_pirates.services.exceptions.AppUserNotFoundByIdException;
 import com.dauphine.event_management_backend_pirates.services.exceptions.CategoryNotFoundByIdException;
@@ -65,19 +62,20 @@ public class  EventController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Event>  createEvent(@RequestBody CreateEventRequestBody createEventRequestBody)
+    public ResponseEntity<Event>  createEvent(@RequestBody EventRequestBody eventRequestBody)
             throws CategoryNotFoundByIdException, LocationNotFoundByIdException, AppUserNotFoundByIdException {
-        Event event = eventService.create(createEventRequestBody);
+        Event event = eventService.create(eventRequestBody);
         return ResponseEntity
                 .created(URI.create("v1/events/" + event.getId()))
                 .body(event);
     }
 
-    @PutMapping("")
-    public ResponseEntity<Event> updateEvent(@RequestBody UpdateEventRequestBody updateEventRequestBody)
+    @PutMapping("/{id}")
+    public ResponseEntity<Event> updateEvent(@PathVariable UUID id,
+                                             @RequestBody EventRequestBody eventRequestBody)
             throws CategoryNotFoundByIdException, LocationNotFoundByIdException, EventNotFoundByIdException,
             AppUserNotFoundByIdException {
-        Event event = eventService.update(updateEventRequestBody);
+        Event event = eventService.update(id, eventRequestBody);
         return ResponseEntity
                 .created(URI.create("v1/events/" + event.getId()))
                 .body(event);

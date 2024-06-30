@@ -1,7 +1,6 @@
 package com.dauphine.event_management_backend_pirates.services.impl;
 
-import com.dauphine.event_management_backend_pirates.controllers.requestbody.CreateEventRequestBody;
-import com.dauphine.event_management_backend_pirates.controllers.requestbody.UpdateEventRequestBody;
+import com.dauphine.event_management_backend_pirates.controllers.requestbody.EventRequestBody;
 import com.dauphine.event_management_backend_pirates.models.*;
 import com.dauphine.event_management_backend_pirates.repository.EventRepository;
 import com.dauphine.event_management_backend_pirates.services.AppUserService;
@@ -74,15 +73,15 @@ public class EventServiceImpl implements EventService {
         return eventRepository.findAllFinishedEvents(userId);
     }
     @Override
-    public Event create(CreateEventRequestBody createEventRequestBody)
+    public Event create(EventRequestBody eventRequestBody)
             throws CategoryNotFoundByIdException, LocationNotFoundByIdException, AppUserNotFoundByIdException {
-        Location location = locationService.getById(createEventRequestBody.locationId());
-        Category category = categoryService.getById(createEventRequestBody.categoryId());
-        AppUser user = appUserService.getById(createEventRequestBody.organizerId());
-        Event event = new Event(createEventRequestBody.name(),
-                createEventRequestBody.description(),
-                createEventRequestBody.startDate(),
-                createEventRequestBody.endDate(),
+        Location location = locationService.getById(eventRequestBody.locationId());
+        Category category = categoryService.getById(eventRequestBody.categoryId());
+        AppUser user = appUserService.getById(eventRequestBody.organizerId());
+        Event event = new Event(eventRequestBody.name(),
+                eventRequestBody.description(),
+                eventRequestBody.startDate(),
+                eventRequestBody.endDate(),
                 location,
                 category,
                 user);
@@ -90,8 +89,8 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Event update(UpdateEventRequestBody updateEventRequestBody) throws EventNotFoundByIdException, LocationNotFoundByIdException, CategoryNotFoundByIdException, AppUserNotFoundByIdException {
-        Event event = getById(updateEventRequestBody.eventId());
+    public Event update(UUID id, EventRequestBody updateEventRequestBody) throws EventNotFoundByIdException, LocationNotFoundByIdException, CategoryNotFoundByIdException, AppUserNotFoundByIdException {
+        Event event = getById(id);
         event.setName(updateEventRequestBody.name());
         event.setDescription(updateEventRequestBody.description());
         event.setStartDate(updateEventRequestBody.startDate());
