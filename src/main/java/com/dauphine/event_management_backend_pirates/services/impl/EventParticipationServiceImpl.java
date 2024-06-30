@@ -14,6 +14,7 @@ import com.dauphine.event_management_backend_pirates.services.exceptions.AppUser
 import com.dauphine.event_management_backend_pirates.services.exceptions.EventNotFoundByIdException;
 import com.dauphine.event_management_backend_pirates.services.exceptions.EventParticipationNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.UUID;
@@ -67,10 +68,10 @@ public class EventParticipationServiceImpl implements EventParticipationService 
     }
 
     @Override
-    public EventParticipation update(UpdateEventParticipationRequestBody updateEventParticipationRequestBody)
+    public EventParticipation update(UUID userId, UUID eventId,
+                                     UpdateEventParticipationRequestBody updateEventParticipationRequestBody)
             throws AppUserNotFoundByIdException, EventNotFoundByIdException, EventParticipationNotFoundException {
-       EventParticipation eventParticipation = getById(updateEventParticipationRequestBody.userId(),
-               updateEventParticipationRequestBody.eventId());
+       EventParticipation eventParticipation = getById(userId, eventId);
        eventParticipation.setFeedback(updateEventParticipationRequestBody.feedback());
        eventParticipation.setRating(updateEventParticipationRequestBody.rating());
         return eventParticipationRepository.save(eventParticipation);

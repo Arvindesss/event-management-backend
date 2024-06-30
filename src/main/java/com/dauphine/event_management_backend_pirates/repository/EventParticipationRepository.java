@@ -12,9 +12,9 @@ import java.util.UUID;
 public interface EventParticipationRepository extends JpaRepository<EventParticipation, EventParticipationId>{
 
     @Query(value = """
-            SELECT *
-            FROM event_participation ep
-            WHERE ep.eventId = :eventId
-            """, nativeQuery = true)
+            SELECT ep
+            FROM EventParticipation ep
+            WHERE ep.id.event.id = :eventId
+            """)
     List<EventParticipation> findByEventId(UUID eventId);
 }

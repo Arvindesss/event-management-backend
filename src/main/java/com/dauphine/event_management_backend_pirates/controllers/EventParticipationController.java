@@ -52,11 +52,12 @@ public class EventParticipationController {
                 .body(eventParticipation);
     }
 
-    @PutMapping("")
-    public ResponseEntity<EventParticipation> update(
+    @PutMapping("/{userId}/{eventId}")
+    public ResponseEntity<EventParticipation> update(@PathVariable UUID userId, @PathVariable UUID eventId,
             @RequestBody UpdateEventParticipationRequestBody updateEventParticipationRequestBody)
             throws EventParticipationNotFoundException, EventNotFoundByIdException, AppUserNotFoundByIdException {
-        EventParticipation eventParticipation = eventParticipationService.update(updateEventParticipationRequestBody);
+
+        EventParticipation eventParticipation = eventParticipationService.update(userId, eventId, updateEventParticipationRequestBody);
         return ResponseEntity
                 .created(URI.create("v1/event-participations"))
                 .body(eventParticipation);

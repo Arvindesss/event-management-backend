@@ -9,6 +9,7 @@ import com.dauphine.event_management_backend_pirates.services.exceptions.AppUser
 import com.dauphine.event_management_backend_pirates.services.exceptions.EventNotFoundByIdException;
 import com.dauphine.event_management_backend_pirates.services.exceptions.EventParticipationNotFoundException;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,7 +26,7 @@ public interface EventParticipationService {
     EventParticipation create(EventParticipationIdRequestBody eventParticipationIdRequestBody)
             throws AppUserNotFoundByIdException, EventNotFoundByIdException;
 
-    EventParticipation update(UpdateEventParticipationRequestBody updateEventParticipationRequestBody)
+    EventParticipation update(UUID userId, UUID eventId, UpdateEventParticipationRequestBody updateEventParticipationRequestBody)
             throws AppUserNotFoundByIdException, EventNotFoundByIdException, EventParticipationNotFoundException;
 
     void deleteById(UUID userId, UUID eventId)
