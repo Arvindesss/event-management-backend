@@ -1,11 +1,18 @@
 package com.dauphine.event_management_backend_pirates.controllers;
 
 import com.dauphine.event_management_backend_pirates.controllers.requestbody.CreateEventRequestBody;
+import com.dauphine.event_management_backend_pirates.controllers.requestbody.UpdateEventRequestBody;
 import com.dauphine.event_management_backend_pirates.models.Event;
+import com.dauphine.event_management_backend_pirates.models.Location;
 import com.dauphine.event_management_backend_pirates.services.EventService;
+import com.dauphine.event_management_backend_pirates.services.exceptions.AppUserNotFoundByIdException;
+import com.dauphine.event_management_backend_pirates.services.exceptions.CategoryNotFoundByIdException;
+import com.dauphine.event_management_backend_pirates.services.exceptions.EventNotFoundByIdException;
+import com.dauphine.event_management_backend_pirates.services.exceptions.LocationNotFoundByIdException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,22 +38,33 @@ public class  EventController {
     }
 
     @GetMapping("/{id}")
-    public Event getEventById(@PathVariable UUID id){
-        return eventService.getById(id);
+    public ResponseEntity<Event>  getEventById(@PathVariable UUID id) throws EventNotFoundByIdException {
+        Event event = eventService.getById(id);
+        return ResponseEntity.ok(event);
     }
 
     @PostMapping("")
-    public Event createEvent(@RequestBody CreateEventRequestBody createEventRequestBody){
-        return eventService.create(createEventRequestBody);
+    public ResponseEntity<Event>  createEvent(@RequestBody CreateEventRequestBody createEventRequestBody)
+            throws CategoryNotFoundByIdException, LocationNotFoundByIdException, AppUserNotFoundByIdException {
+        Event event = eventService.create(createEventRequestBody);
+        return ResponseEntity
+                .created(URI.create("v1/events/" + event.getId()))
+                .body(event);
     }
 
-    @PutMapping("/{id}")
-    public Event updateEvent(@PathVariable UUID id, @RequestBody String name){
-        return eventService.update(id,name);
+    @PutMapping("")
+    public ResponseEntity<Event>  updateEvent(@RequestBody UpdateEventRequestBody updateEventRequestBody)
+            throws CategoryNotFoundByIdException, LocationNotFoundByIdException, EventNotFoundByIdException,
+            AppUserNotFoundByIdException {
+        Event event = eventService.update(updateEventRequestBody);
+        return ResponseEntity
+                .created(URI.create("v1/events/" + event.getId()))
+                .body(event);
     }
 
     @DeleteMapping("/{id}")
-    public UUID deleteEvent(@PathVariable UUID id){
-        return eventService.deleteById(id)?id:null;
+    public ResponseEntity<Event> deleteEvent(@PathVariable UUID id) throws EventNotFoundByIdException {
+        eventService.deleteById(id);
+        return ResponseEntity.ok().build();
     }
 }

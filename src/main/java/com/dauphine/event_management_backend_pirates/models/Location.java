@@ -38,6 +38,11 @@ public class Location {
     public Location() {
     }
 
+    @Override
+    public String toString() {
+        return id + ", " + address + ", " + postalCode + ", " + city + ", " + country;
+    }
+
     public UUID getId() {
         return id;
     }

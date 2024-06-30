@@ -1,38 +1,42 @@
 package com.dauphine.event_management_backend_pirates.services.impl;
 
 import com.dauphine.event_management_backend_pirates.controllers.requestbody.CreateEventRequestBody;
+import com.dauphine.event_management_backend_pirates.controllers.requestbody.UpdateEventRequestBody;
 import com.dauphine.event_management_backend_pirates.models.AppUser;
 import com.dauphine.event_management_backend_pirates.models.Category;
 import com.dauphine.event_management_backend_pirates.models.Event;
 import com.dauphine.event_management_backend_pirates.models.Location;
-import com.dauphine.event_management_backend_pirates.repository.AppUserRepository;
-import com.dauphine.event_management_backend_pirates.repository.CategoryRepository;
 import com.dauphine.event_management_backend_pirates.repository.EventRepository;
-import com.dauphine.event_management_backend_pirates.repository.LocationRepository;
+import com.dauphine.event_management_backend_pirates.services.AppUserService;
+import com.dauphine.event_management_backend_pirates.services.CategoryService;
 import com.dauphine.event_management_backend_pirates.services.EventService;
+import com.dauphine.event_management_backend_pirates.services.LocationService;
+import com.dauphine.event_management_backend_pirates.services.exceptions.AppUserNotFoundByIdException;
+import com.dauphine.event_management_backend_pirates.services.exceptions.CategoryNotFoundByIdException;
+import com.dauphine.event_management_backend_pirates.services.exceptions.EventNotFoundByIdException;
+import com.dauphine.event_management_backend_pirates.services.exceptions.LocationNotFoundByIdException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class EventServiceImpl implements EventService {
+
     private final EventRepository eventRepository;
 
-    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
 
-    private final LocationRepository locationRepository;
+    private final LocationService locationService;
 
-    private final AppUserRepository appUserRepository;
+    private final AppUserService appUserService;
 
-    public EventServiceImpl(EventRepository eventRepository, CategoryRepository categoryRepository,
-                            LocationRepository locationRepository, AppUserRepository appUserRepository) {
+    public EventServiceImpl(EventRepository eventRepository, CategoryService categoryService,
+                            LocationService locationService, AppUserService appUserService) {
         this.eventRepository = eventRepository;
-        this.categoryRepository = categoryRepository;
-        this.locationRepository = locationRepository;
-        this.appUserRepository = appUserRepository;
+        this.categoryService = categoryService;
+        this.locationService = locationService;
+        this.appUserService = appUserService;
     }
 
     @Override
@@ -51,37 +55,42 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Event getById(UUID id) {
-        return eventRepository.findById(id).orElse(null);
+    public Event getById(UUID id) throws EventNotFoundByIdException {
+        return eventRepository.findById(id).orElseThrow(() -> new EventNotFoundByIdException("Event with id "
+                + id + " not found"));
+    }
+    @Override
+    public Event create(CreateEventRequestBody createEventRequestBody)
+            throws CategoryNotFoundByIdException, LocationNotFoundByIdException, AppUserNotFoundByIdException {
+        Location location = locationService.getById(createEventRequestBody.locationId());
+        Category category = categoryService.getById(createEventRequestBody.categoryId());
+        AppUser user = appUserService.getById(createEventRequestBody.organizerId());
+        Event event = new Event(createEventRequestBody.name(),
+                createEventRequestBody.description(),
+                createEventRequestBody.startDate(),
+                createEventRequestBody.endDate(),
+                location,
+                category,
+                user);
+        return eventRepository.save(event);
     }
 
     @Override
-    public Event create(CreateEventRequestBody createEventRequestBody) {
-        Optional<Location> location = locationRepository.findById(createEventRequestBody.locationId());
-        Optional<Category> category = categoryRepository.findById(createEventRequestBody.categoryId());
-        Optional<AppUser> user = appUserRepository.findById(createEventRequestBody.organizerId());
-        if(location.isPresent() && category.isPresent() && user.isPresent()) {
-            Event event = new Event(createEventRequestBody.name(),
-                    createEventRequestBody.description(),
-                    createEventRequestBody.startDate(),
-                    createEventRequestBody.endDate(),
-                    location.get(),
-                    category.get(),
-                    user.get());
-            return eventRepository.save(event);
-        }
-        else throw new RuntimeException("Category or location or user not found");
+    public Event update(UpdateEventRequestBody updateEventRequestBody) throws EventNotFoundByIdException, LocationNotFoundByIdException, CategoryNotFoundByIdException, AppUserNotFoundByIdException {
+        Event event = getById(updateEventRequestBody.eventId());
+        event.setName(updateEventRequestBody.name());
+        event.setDescription(updateEventRequestBody.description());
+        event.setStartDate(updateEventRequestBody.startDate());
+        event.setEndDate(updateEventRequestBody.endDate());
+        event.setLocation(locationService.getById(updateEventRequestBody.locationId()));
+        event.setCategory(categoryService.getById(updateEventRequestBody.categoryId()));
+        event.setOrganizer(appUserService.getById(updateEventRequestBody.organizerId()));
+        return eventRepository.save(event);
     }
 
     @Override
-    public Event update(UUID id, String name) {
-        //TODO: todo later
-        return null;
-    }
-
-    @Override
-    public boolean deleteById(UUID id) {
+    public void deleteById(UUID id) throws EventNotFoundByIdException {
+        getById(id);
         eventRepository.deleteById(id);
-        return true;
     }
 }

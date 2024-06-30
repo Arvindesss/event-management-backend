@@ -3,6 +3,9 @@ package com.dauphine.event_management_backend_pirates.services.impl;
 import com.dauphine.event_management_backend_pirates.models.Category;
 import com.dauphine.event_management_backend_pirates.repository.CategoryRepository;
 import com.dauphine.event_management_backend_pirates.services.CategoryService;
+import com.dauphine.event_management_backend_pirates.services.exceptions.CategoryAlreadyExistsException;
+import com.dauphine.event_management_backend_pirates.services.exceptions.CategoryNotFoundByIdException;
+import com.dauphine.event_management_backend_pirates.services.exceptions.CategoryNotFoundByNameException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,33 +26,40 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<Category> getAllByName(String name) {
-        return categoryRepository.findByName(name);
+    public List<Category> getAllLikeName(String name) {
+        return categoryRepository.findAllLikeName(name);
     }
 
-    public Category getById(UUID id) {
-        return categoryRepository.findById(id).orElse(null);
+    public Category getById(UUID id) throws CategoryNotFoundByIdException {
+        return categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundByIdException("Category with id "
+                + id + " not found"));
     }
 
     @Override
-    public Category create(String name) {
+    public Category getByNameIgnoreCase(String name) throws CategoryNotFoundByNameException {
+        return categoryRepository.findByNameIgnoreCase(name).orElseThrow(() ->
+                new CategoryNotFoundByNameException("Category with name " + name + " not found"));
+    }
+
+    @Override
+    public Category create(String name) throws CategoryAlreadyExistsException {
+        if(categoryRepository.findByNameIgnoreCase(name).isPresent()) {
+            throw new CategoryAlreadyExistsException("Category with name " + name + " already exists");
+        };
         Category category = new Category(name);
         return categoryRepository.save(category);
     }
 
     @Override
-    public Category updateName(UUID id, String name) {
+    public Category updateName(UUID id, String name) throws CategoryNotFoundByIdException {
         Category category = getById(id);
-        if(category == null){
-            return null;
-        }
         category.setName(name);
         return categoryRepository.save(category);
     }
 
     @Override
-    public boolean deleteById(UUID id) {
+    public void deleteById(UUID id) throws CategoryNotFoundByIdException {
+        getById(id);
         categoryRepository.deleteById(id);
-        return true;
     }
 }
