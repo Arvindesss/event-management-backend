@@ -40,7 +40,7 @@ CREATE TABLE EVENT_PARTICIPATION(
     feedback TEXT,
     rating DOUBLE PRECISION,
     PRIMARY KEY(id_user, id_event),
-    FOREIGN KEY(id_user) REFERENCES APP_USER(id_user),
-    FOREIGN KEY(id_event) REFERENCES EVENT(id_event),
+    FOREIGN KEY(id_user) REFERENCES APP_USER(id_user) on delete cascade,
+    FOREIGN KEY(id_event) REFERENCES EVENT(id_event) on delete cascade,
     CHECK (rating >= 0 AND rating <= 5)
 );
