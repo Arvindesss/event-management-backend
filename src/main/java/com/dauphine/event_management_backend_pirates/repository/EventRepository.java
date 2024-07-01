@@ -37,7 +37,6 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
             SELECT e FROM Event e
             INNER JOIN EventParticipation ep ON ep.id.event.id = e.id
             WHERE ep.id.user.id = :userId
-            AND e.organizer.id != :userId
             AND e.endDate < CURRENT_TIMESTAMP
             """)
     List<Event> findAllFinishedEvents(UUID userId);

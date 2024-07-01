@@ -1,5 +1,6 @@
 package com.dauphine.event_management_backend_pirates.services.impl;
 
+import com.dauphine.event_management_backend_pirates.controllers.requestbody.EventFilterParams;
 import com.dauphine.event_management_backend_pirates.controllers.requestbody.EventRequestBody;
 import com.dauphine.event_management_backend_pirates.models.*;
 import com.dauphine.event_management_backend_pirates.repository.EventRepository;
@@ -41,11 +42,6 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<Event> getAllEventsToExplore(UUID userId) {
-        return eventRepository.findAllToExplore(userId);
-    }
-
-    @Override
     public List<Event> getAllByName(String name) {
         return eventRepository.findByName(name);
     }
@@ -56,21 +52,31 @@ public class EventServiceImpl implements EventService {
                 + id + " not found"));
     }
 
-    public List<Event> getByOrganizerId(UUID organizerId) throws AppUserNotFoundByIdException {
+    @Override
+    public List<Event> getAllEventsToExplore(UUID userId, EventFilterParams eventFilterParams) {
+        List<Event> events = eventRepository.findAllToExplore(userId);
+        return EventFilterer.sort(events, eventFilterParams);
+    }
+
+    @Override
+    public List<Event> getByOrganizerId(UUID organizerId, EventFilterParams eventFilterParams) throws AppUserNotFoundByIdException {
         appUserService.getById(organizerId);
-        return eventRepository.findAllByOrganizerId(organizerId);
+        List<Event> events = eventRepository.findAllByOrganizerId(organizerId);
+        return EventFilterer.sort(events, eventFilterParams);
     }
 
     @Override
-    public List<Event> getRegisteredEventsByUser(UUID userId) throws AppUserNotFoundByIdException {
+    public List<Event> getRegisteredEventsByUser(UUID userId, EventFilterParams eventFilterParams) throws AppUserNotFoundByIdException {
         appUserService.getById(userId);
-        return eventRepository.findAllUserRegisteredEvents(userId);
+        List<Event> events = eventRepository.findAllUserRegisteredEvents(userId);
+        return EventFilterer.sort(events, eventFilterParams);
     }
 
     @Override
-    public List<Event> getFinishedEventsByUser(UUID userId) throws AppUserNotFoundByIdException {
+    public List<Event> getFinishedEventsByUser(UUID userId, EventFilterParams eventFilterParams) throws AppUserNotFoundByIdException {
         appUserService.getById(userId);
-        return eventRepository.findAllFinishedEvents(userId);
+        List<Event> events = eventRepository.findAllFinishedEvents(userId);
+        return EventFilterer.sort(events, eventFilterParams);
     }
     @Override
     public Event create(EventRequestBody eventRequestBody)

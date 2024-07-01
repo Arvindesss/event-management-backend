@@ -1,5 +1,6 @@
 package com.dauphine.event_management_backend_pirates.controllers;
 
+import com.dauphine.event_management_backend_pirates.controllers.requestbody.EventFilterParams;
 import com.dauphine.event_management_backend_pirates.controllers.requestbody.EventRequestBody;
 import com.dauphine.event_management_backend_pirates.models.Event;
 import com.dauphine.event_management_backend_pirates.services.EventService;
@@ -29,35 +30,40 @@ public class  EventController {
         return name == null || name.isBlank() ? eventService.getAll() : eventService.getAllByName(name);
     }
 
-    @GetMapping("explore/{userId}")
-    public ResponseEntity<List<Event>> getAllEventsToExplore(@PathVariable UUID userId){
-        List<Event> events = eventService.getAllEventsToExplore(userId);
-        return ResponseEntity.ok(events);
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<Event>  getEventById(@PathVariable UUID id) throws EventNotFoundByIdException {
         Event event = eventService.getById(id);
         return ResponseEntity.ok(event);
     }
+
+    @GetMapping("explore/{userId}")
+    public ResponseEntity<List<Event>> getAllEventsToExplore(@PathVariable UUID userId,
+                                                             @ModelAttribute EventFilterParams eventFilterParams){
+        List<Event> events = eventService.getAllEventsToExplore(userId, eventFilterParams);
+        return ResponseEntity.ok(events);
+    }
+
     @GetMapping("/my-events/{organizerId}")
-    public ResponseEntity<List<Event>> getByOrganizerId(@PathVariable UUID organizerId)
+    public ResponseEntity<List<Event>> getByOrganizerId(@PathVariable UUID organizerId,
+                                                        @ModelAttribute EventFilterParams eventFilterParams)
             throws AppUserNotFoundByIdException {
-        List<Event> events = eventService.getByOrganizerId(organizerId);
+        List<Event> events = eventService.getByOrganizerId(organizerId, eventFilterParams);
         return ResponseEntity.ok(events);
     }
 
     @GetMapping("/registered-events/{userId}")
-    public ResponseEntity<List<Event>> getRegisteredEventsByUser(@PathVariable UUID userId)
+    public ResponseEntity<List<Event>> getRegisteredEventsByUser(@PathVariable UUID userId,
+                                                                 @ModelAttribute EventFilterParams eventFilterParams)
             throws AppUserNotFoundByIdException {
-        List<Event> events = eventService.getRegisteredEventsByUser(userId);
+        List<Event> events = eventService.getRegisteredEventsByUser(userId, eventFilterParams);
         return ResponseEntity.ok(events);
     }
 
     @GetMapping("/finished-events/{userId}")
-    public ResponseEntity<List<Event>> getFinishedEventsByUser(@PathVariable UUID userId)
+    public ResponseEntity<List<Event>> getFinishedEventsByUser(@PathVariable UUID userId,
+                                                               @ModelAttribute EventFilterParams eventFilterParams)
             throws AppUserNotFoundByIdException {
-        List<Event> events = eventService.getFinishedEventsByUser(userId);
+        List<Event> events = eventService.getFinishedEventsByUser(userId, eventFilterParams);
         return ResponseEntity.ok(events);
     }
 

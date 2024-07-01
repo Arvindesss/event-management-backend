@@ -1,5 +1,6 @@
 package com.dauphine.event_management_backend_pirates.services;
 
+import com.dauphine.event_management_backend_pirates.controllers.requestbody.EventFilterParams;
 import com.dauphine.event_management_backend_pirates.controllers.requestbody.EventRequestBody;
 import com.dauphine.event_management_backend_pirates.models.Event;
 import com.dauphine.event_management_backend_pirates.services.exceptions.AppUserNotFoundByIdException;
@@ -14,17 +15,17 @@ import java.util.UUID;
 public interface EventService {
     List<Event> getAll();
 
-    List<Event> getAllEventsToExplore(UUID userId);
-
     List<Event> getAllByName(String name);
 
     Event getById(UUID id) throws EventNotFoundByIdException;
 
-    List<Event> getByOrganizerId(UUID userId) throws AppUserNotFoundByIdException;
+    List<Event> getAllEventsToExplore(UUID userId, EventFilterParams eventFilterParams);
 
-    List<Event> getRegisteredEventsByUser(UUID userId) throws AppUserNotFoundByIdException;
+    List<Event> getByOrganizerId(UUID organizerId, EventFilterParams eventFilterParams) throws AppUserNotFoundByIdException;
 
-    List<Event> getFinishedEventsByUser(UUID userId) throws AppUserNotFoundByIdException;
+    List<Event> getRegisteredEventsByUser(UUID userId, EventFilterParams eventFilterParams) throws AppUserNotFoundByIdException;
+
+    List<Event> getFinishedEventsByUser(UUID userId, EventFilterParams eventFilterParams) throws AppUserNotFoundByIdException;
 
     Event create(EventRequestBody eventRequestBody) throws CategoryNotFoundByIdException, LocationNotFoundByIdException, AppUserNotFoundByIdException;
 

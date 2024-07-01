@@ -43,6 +43,11 @@ public class Location {
         return id + ", " + address + ", " + postalCode + ", " + city + ", " + country;
     }
 
+    public String toLocationString() {
+        return address + " , " + postalCode + " , " + city + " , " + country;
+    }
+
+
     public UUID getId() {
         return id;
     }

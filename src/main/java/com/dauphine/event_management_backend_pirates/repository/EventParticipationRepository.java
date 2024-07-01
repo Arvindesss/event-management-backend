@@ -15,6 +15,7 @@ public interface EventParticipationRepository extends JpaRepository<EventPartici
             SELECT ep
             FROM EventParticipation ep
             WHERE ep.id.event.id = :eventId
+            AND ep.feedback IS NOT NULL AND ep.rating IS NOT NULL
             """)
     List<EventParticipation> findByEventId(UUID eventId);
 }
